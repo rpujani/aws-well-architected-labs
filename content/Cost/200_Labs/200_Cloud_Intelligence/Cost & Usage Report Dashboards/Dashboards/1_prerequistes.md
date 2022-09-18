@@ -445,10 +445,8 @@ It can take up to 24 hours for AWS to start delivering reports to your Amazon S3
 1. For **Report name**, enter a name for your report.
 
 1. Under **Additional report details**, select **Include resource IDs** to include the IDs of each individual resource in the report.
-
 **Note:** Including resource IDs will create individual line items for each of your resources. This can increase the size of your Cost and Usage Reports files significantly, based on your AWS usage.
     ------------ | -------------
-
 1. For **Data refresh settings**, select whether you want the AWS Cost and Usage Reports to refresh if AWS applies refunds, credits, or support fees to your account after finalizing your bill. When a report refreshes, a new report is uploaded to Amazon S3.
 
 1. Choose **Next**.
@@ -462,9 +460,9 @@ It can take up to 24 hours for AWS to start delivering reports to your Amazon S3
     + Enter a bucket name and the Region where you want to create a new bucket and choose **Next**.
 
 1. Review the bucket policy, and select **I have confirmed that this policy is correct** and choose **Save**.
-
 1. For **Report path prefix**, enter the report path prefix that you want prepended to the name of your report.
-
+**Note:** Make sure that report path prefix doesn't include a double slash (//) as Athena doesn't support such table location.
+    ------------ | -------------
 1. For **Time granularity**, choose **Hourly**.
 
 1. For **Report versioning**, choose **Overwrite existing report**.
@@ -491,7 +489,7 @@ To get Athena warmed up:
 
 1. From the services list, choose **S3**
 
-1. Create a new S3 bucket for Athena queries to be logged to. Keep to the same region as the S3 bucket created for your Cost & Usage Report.
+1. Create a new S3 bucket for Athena queries to be logged to (ex: `aws-athena-query-results-cid-${AWS::AccountId}-${AWS::Region}` ). Keep to the same region as the S3 bucket created for your Cost & Usage Report.
 
 1. From the services list, choose **Athena**
 
@@ -503,6 +501,8 @@ To get Athena warmed up:
 
 1. Enter the path of the bucket created for Athena queries, it is recommended that you also select the AutoComplete option **NOTE:** The trailing “/” in the folder path is required!
 
+1. Make sure you configured s3 bucket results location for both Athena Query Editor and the 'Primary' Workgroup.
+
 ##### 2. Prepare CUR & Athena Integration
 {{% notice note %}}
 Before you can use the AWS CloudFormation template to automate an Athena integration, you must wait for the first Cost and Usage Report to be delivered to your Amazon S3 bucket.
@@ -510,11 +510,13 @@ Before you can use the AWS CloudFormation template to automate an Athena integra
 
 To streamline and automate integration of your Cost and Usage Reports with Athena, AWS provides an AWS CloudFormation template with several key resources along with the reports you setup for Athena integration. The AWS CloudFormation template includes an AWS Glue crawler, an AWS Glue database, and an AWS Lambda event.
 
+If you are not deploying the CIDs in your payer acacount, or wish to deploy them on top of multiple payer accounts, please follow [these instructions](https://wellarchitectedlabs.com/cost/200_labs/200_cloud_intelligence/faq/) in lieu of the below. Come back for the QuickSight prerequisites.
+
 1. From the services list, choose **S3**
 
 1. Navigate to the S3 bucket where the **Cost & Usage Report** was saved
 
-1. Select the Object named after the **prefix** defined when your Cost & Usage Report was created (Step 11 in [Prepare Cost & Usage Report](prepare-cur.html))
+1. Select the Object named after the **prefix** defined when your Cost & Usage Report was created (Step 11 in [Prepare Cost & Usage Report](#prepare-cost--usage-report) --> Configure Cur)
 
 1. Select the Object named after the **Cost & Usage Report**
 
@@ -578,4 +580,4 @@ QuickSight is the AWS Business Intelligence tool that will allow you to not only
 
 
 
-{{< prev_next_button link_prev_url="./cost-usage-report-dashboards/" link_next_url="../2a_cost_intelligence_dashboard" />}}
+{{< prev_next_button link_prev_url="./cost-usage-report-dashboards/" link_next_url="../2_deploy_dashboards" />}}
